@@ -26,9 +26,28 @@ Como se puede ver, Pyspark requirió el menor tiempo para importar los datos en 
 
 ## Manipulación del dataframe
 
-Se realizaron distintas operaciones básicas en el dataframe, como mostrar el curso más antiguo y el más reciente con su fecha de publicación, contar el número de cursos por idioma y ordenar los cursos para mostrar los 10 con más subscriptores, para estas operaciones Pandas es la herramienta que realizó las tareas en el menor tiempo, seguido por Pyspark y siendo Pyspark.pandas la herramienta más lenta.
+Se realizaron distintas operaciones básicas en el dataframe, como mostrar el curso más antiguo y el más reciente con su fecha de publicación, contar el número de cursos por idioma y ordenar los cursos para mostrar los 10 con más subscriptores, para estas operaciones Pandas es la herramienta que realizó las tareas en el menor tiempo, seguido por Pyspark y siendo Pyspark.pandas la herramienta más lenta. Dado que se trata de un dataset pequeño (menos de 1Gb) puede manipularse sin complicaciones un solo nodo, lo que le da una ventaja a Pandas; adicionalmente esto también significa que Pyspark será aún más eficiente, ya que está desarrollado para manejo de datasets muy grandes.
 
 ## Definiendo y usando UDF (User Defined Functions)
 
-Se definió una función en python que permitiera extraer prefijos específicos de los nombres de los instructores. Dado que se trabajó con Pyton en los tres notebooks se definió la misma función; sin embargo, en Pyspark y Pyspark.pandas es necesario transformar la función de python mediante la función udf() de spark para poder usarla en el dataframe, esto no es necesario en Pandas ya que es una librería nativa de Python. Los efectos de esta transformación se reflejan en la eficiencia de la función definida por el usuario.
+Se definió una función en python que permitiera extraer prefijos específicos de los nombres de los instructores y posteriormente se utilizó esa función para crear una nueva columna en el dataframe con los nombres de pila de los instructores. Dado que se trabajó con Pyton en los tres notebooks se definió la misma función; sin embargo, en Pyspark y Pyspark.pandas es necesario transformar la función de python mediante la función udf() de spark para poder usarla en el dataframe, esto no es necesario en Pandas ya que es una librería nativa de Python. Los efectos de esta transformación se reflejan en la eficiencia de la función definida por el usuario. Los tiempos requeridos por cada herramienta en crear la nueva columna utilizando la udf() y mostrar en pantalla el resultado son los siguientes.
+
+|            | Pyspark | Pandas | Pyspark.pandas |
+| :--------: | :-----: | :----: | :------------: |
+| Tiempo (s) |  5.278  |  0.100 |     7.498      |
+
+En este caso Pandas es la herramienta que utilizó el menor tiempo pues no requiere convertir la función para poder aplicarla al dataframe, simplemente se requiere de la función map(); en Pyspark se requirió de un mayor tiempo debido a que la función pasa por un proceso de Serialización-Deserialización que se vuelve costoso respecto al tiempo de ejecución. Por otro lado, en Pyspark.pandas la sintaxis es la misma que la de Pandas sin embargo, al ejecutarse sobre la API de Pyspark el tiempo de ejecución es mayor debido a la baja eficiencia de las udf definidas en Pyspark.
+
+## Conclusiones
+
+Pandas es una herramienta útil para procesar datasets no muy grandes ya que funciona en un solo nodo, sin embargo tiene la ventaja de trabajar con la sintaxis intuitiva de python y provee de gran variedad de funciones para trabajar con dataframes, además de que permite utilizar funciones definidas por el usuario en python sin complicaciones en cuanto al rendimiento.
+
+Spark es la herramienta más eficiente para trabajar con datasets de todos los tamaños y además la API Pyspark permite disminuir la curva de aprendizaje al utilizar la sintaxis de python; sin embargo, pierde su eficiencia al utilizar User Defined Functions en esta API.
+
+Pyspark.pandas es mucho menos eficiente que Pandas y Pyspark, aunque puede ser más fácil de usar debido a que comparte la sintaxis con Pandas y tiene las ventajas del procesamiento en paralelo de Spark. Esta API aún necesita desarrollarse más para alcanzar la eficiencia de Spark y puede que en el futuro se convierta en la herramienta con más ventajas.
+
+
+
+
+
 
